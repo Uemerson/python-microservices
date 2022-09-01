@@ -3,33 +3,36 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_cors import CORS
 from sqlalchemy import UniqueConstraint
 from flask_migrate import Migrate
+from sqlalchemy.ext.declarative import DeclarativeMeta
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql://root:root@db/main'
+app.config["SQLALCHEMY_DATABASE_URI"] = "mysql://root:root@db/main"
 CORS(app)
 
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 
+BaseModel: DeclarativeMeta = db.Model
 
-class Product(db.Model):
+
+class Product(BaseModel):
     id = db.Column(db.Integer, primary_key=True, autoincrement=False)
     title = db.Column(db.String(200))
     image = db.Column(db.String(200))
 
 
-class ProductUser(db.Model):
+class ProductUser(BaseModel):
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.Integer)
     product_id = db.Column(db.Integer)
 
-    UniqueConstraint('user_id', 'product_id', name='user_product_unique')
+    UniqueConstraint("user_id", "product_id", name="user_product_unique")
 
 
-@app.route('/')
+@app.route("/")
 def index():
-    return 'Hello'
+    return "Hello"
 
 
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
+if __name__ == "__main__":
+    app.run(debug=True, host="0.0.0.0")
